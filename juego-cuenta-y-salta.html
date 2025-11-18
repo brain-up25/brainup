@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cuenta y Salta</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #F3F8FF;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      color: #6A5ACD;
+    }
+    #numeros-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 600px;
+      margin: 20px auto;
+    }
+    #numeros-container button {
+      width: 60px;
+      height: 60px;
+      margin: 5px;
+      font-size: 20px;
+      background-color: #AEE1F9;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+    }
+    #numeros-container button.correcto {
+      background-color: #D8B4E2;
+    }
+    #mensaje {
+      font-size: 18px;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Cuenta y Salta</h1>
+  <p>Haz clic en los números en orden ascendente</p>
+  <h3 id="nivel">Nivel 1</h3>
+  <div id="numeros-container"></div>
+  <p id="mensaje"></p>
+
+  <script>
+    let nivel = 1;
+    let siguiente = 0;
+    let rango = 5;
+
+    function iniciarNivel() {
+      const container = document.getElementById('numeros-container');
+      const mensaje = document.getElementById('mensaje');
+      const nivelTexto = document.getElementById('nivel');
+      container.innerHTML = '';
+      mensaje.textContent = '';
+      siguiente = (nivel - 1) * rango + 1;
+      nivelTexto.textContent = `Nivel ${nivel}`;
+
+      const numeros = Array.from({ length: rango }, (_, i) => siguiente + i)
+        .sort(() => Math.random() - 0.5);
+
+      numeros.forEach(num => {
+        const btn = document.createElement('button');
+        btn.textContent = num;
+        btn.onclick = () => {
+          if (parseInt(btn.textContent) === siguiente) {
+            btn.classList.add('correcto');
+            btn.disabled = true;
+            siguiente++;
+            if (siguiente > nivel * rango) {
+              lanzarConfeti();
+              mensaje.textContent = '¡Muy bien! Nivel completado 🎉';
+              setTimeout(() => {
+                nivel++;
+                if (nivel <= 6) {
+                  iniciarNivel();
+                } else {
+                  mensaje.textContent = '¡Felicidades! Completaste todos los niveles 🎊';
+                }
+              }, 2000);
+            }
+          } else {
+            mensaje.textContent = 'Ups, ese no era. Intenta de nuevo.';
+            setTimeout(() => {
+              iniciarNivel();
+            }, 1500);
+          }
+        };
+        container.appendChild(btn);
+      });
+    }
+
+    function lanzarConfeti() {
+      for (let i = 0; i < 100; i++) {
+        const confeti = document.createElement('div');
+        confeti.style.position = 'fixed';
+        confeti.style.width = '10px';
+        confeti.style.height = '10px';
+        confeti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 70%)`;
+        confeti.style.left = `${Math.random() * 100}%`;
+        confeti.style.top = '-10px';
+        confeti.style.opacity = 0.8;
+        confeti.style.zIndex = 9999;
+        confeti.style.borderRadius = '50%';
+        confeti.style.animation = `caer ${2 + Math.random() * 2}s linear forwards`;
+        document.body.appendChild(confeti);
+        setTimeout(() => confeti.remove(), 4000);
+      }
+    }
+
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes caer {
+        to {
+          transform: translateY(100vh) rotate(360deg);
+          opacity: 0;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+
+    iniciarNivel();
+  </script>
+</body>
+</html>

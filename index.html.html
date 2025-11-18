@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Brain Up</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #F0F8FF;
+      text-align: center;
+      padding: 30px;
+    }
+    #logo {
+      width: 180px;
+      margin-bottom: 10px;
+    }
+    h1 {
+      font-size: 40px;
+      color: #4B0082;
+      margin-bottom: 20px;
+    }
+    button {
+      font-size: 20px;
+      padding: 12px 30px;
+      background-color: #6A5ACD;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    button:hover {
+      background-color: #5a4dbf;
+    }
+    .menu {
+      margin-top: 30px;
+    }
+    .menu select {
+      font-size: 18px;
+      padding: 10px;
+      margin: 10px;
+    }
+    .juegos {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 30px;
+    }
+    .juego {
+      background-color: #AEE1F9;
+      padding: 20px;
+      border-radius: 12px;
+      width: 250px;
+      text-decoration: none;
+      color: #000;
+      font-size: 18px;
+      font-weight: bold;
+      box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+    }
+    .juego:hover {
+      transform: scale(1.05);
+      background-color: #90cdf4;
+    }
+  </style>
+</head>
+<body>
+  <img src="logo.png" alt="Logo Brain Up" id="logo" />
+  <h1>Brain Up</h1>
+  <button onclick="mostrarGrado()">Comenzar</button>
+
+  <div class="menu" id="menuGrado" style="display:none;">
+    <h2>Selecciona tu grado</h2>
+    <select id="gradoSelect" onchange="mostrarMaterias()">
+      <option value="">-- Elige un grado --</option>
+      <option value="1">1° de primaria</option>
+      <option value="2">2° de primaria</option>
+      <option value="3">3° de primaria</option>
+      <option value="4">4° de primaria</option>
+    </select>
+  </div>
+
+  <div class="menu" id="menuMateria" style="display:none;">
+    <h2>Selecciona la materia</h2>
+    <select id="materiaSelect" onchange="mostrarJuegos()">
+      <option value="">-- Elige una materia --</option>
+      <option value="Matemáticas">Matemáticas</option>
+      <option value="Inglés">Inglés</option>
+      <option value="Educación Financiera">Educación Financiera</option>
+    </select>
+  </div>
+
+  <div class="juegos" id="contenedorJuegos" style="display:none;"></div>
+
+  <script>
+    function mostrarGrado() {
+      document.getElementById("menuGrado").style.display = "block";
+      document.getElementById("menuMateria").style.display = "none";
+      document.getElementById("contenedorJuegos").style.display = "none";
+    }
+
+    function mostrarMaterias() {
+      const grado = document.getElementById("gradoSelect").value;
+      if (grado) {
+        document.getElementById("menuMateria").style.display = "block";
+        document.getElementById("contenedorJuegos").style.display = "none";
+      }
+    }
+
+    function mostrarJuegos() {
+      const grado = document.getElementById("gradoSelect").value;
+      const materia = document.getElementById("materiaSelect").value;
+      const contenedor = document.getElementById("contenedorJuegos");
+      contenedor.innerHTML = "";
+
+      if (grado && materia) {
+        const lista = juegos[grado][materia];
+        lista.forEach(juego => {
+          const link = document.createElement("a");
+          link.className = "juego";
+          link.href = juego.archivo + ".html";
+          link.target = "_blank";
+          link.textContent = juego.nombre;
+          contenedor.appendChild(link);
+        });
+        contenedor.style.display = "flex";
+      }
+    }
+
+    const juegos = {
+      "1": {
+        "Matemáticas": [
+          { nombre: "Rompe la Suma", archivo: "juego-rompe-la-suma" },
+          { nombre: "Cuenta y Salta", archivo: "juego-cuenta-y-salta" },
+          { nombre: "Figuras Fantasticas", archivo: "juego-figuras-fantasticas" }
+        ],
+        "Inglés": [
+          { nombre: "Color Match", archivo: "juego-color-match" },
+          { nombre: "Animal Quest", archivo: "juego-animal-quest" },
+          { nombre: "Word Match", archivo: "juego-word-match" }
+        ],
+        "Educación Financiera": [
+          { nombre: "Ahorra Moneditas", archivo: "juego-ahorra-moneditas" },
+          { nombre: "Mi Alcancia", archivo: "juego-mi-alcancia" },
+          { nombre: "Valor de tu Esfuerzo", archivo: "juego-valor-de-tu-esfuerzo" }
+        ]
+      },
+      "2": {
+        "Matemáticas": [
+          { nombre: "Camino Numerico", archivo: "juego-camino-numerico" },
+          { nombre: "Figuras Locas", archivo: "juego-figuras-locas" },
+          { nombre: "Series Saltarinas", archivo: "juego-series-saltarinas" }
+        ],
+        "Inglés": [
+          { nombre: "Days Dash", archivo: "juego-days-dash" },
+          { nombre: "My Body Puzzle", archivo: "juego-my-body-puzzle" },
+          { nombre: "Adjective Attack", archivo: "juego-adjective-attack" }
+        ],
+        "Educación Financiera": [
+          { nombre: "Cambio Exacto", archivo: "juego-cambio-exacto" },
+          { nombre: "¿Necesito o Quiero?", archivo: "juego-necesito-o-quiero" },
+          { nombre: "Cuida tu Dinero", archivo: "juego-cuida-tu-dinero" }
+        ]
+      },
+      "3": {
+        "Matemáticas": [
+          { nombre: "MultiplicaMania", archivo: "juego-multiplicamania" },
+          { nombre: "Dividelos", archivo: "juego-dividuelos" },
+          { nombre: "Fractoaventura", archivo: "juego-fractoaventura" }
+        ],
+        "Inglés": [
+          { nombre: "Describe Me!", archivo: "juego-describe-me" },
+          { nombre: "Do Detective", archivo: "juego-do-detective" },
+          { nombre: "Action Match", archivo: "juego-action-match" }
+        ],
+        "Educación Financiera": [
+          { nombre: "Compra y Vende", archivo: "juego-compra-y-vende" },
+          { nombre: "Publicidad o Realidad", archivo: "juego-publicidad-o-realidad" },
+          { nombre: "Presupuesto Magico", archivo: "juego-presupuesto-magico" }
+        ]
+      },
+      "4": {
+        "Matemáticas": [
+          { nombre: "Residuo Rapido", archivo: "juego-residuo-rapido" },
+          { nombre: "Fraccion Twins", archivo: "juego-fraccion-twins" },
+          { nombre: "PorcentaMania", archivo: "juego-porcentamania" }
+        ],
+        "Inglés": [
+          { nombre: "Fashion Match", archivo: "juego-fashion-match" },
+          { nombre: "City Sprint", archivo: "juego-city-sprint" },
+          { nombre: "Action Zoom", archivo: "juego-action-zoom" }
+        ],
+        "Educación Financiera": [
+          { nombre: "Dinero Digital", archivo: "juego-dinero-digital" },
+          { nombre: "Ahorro en Equipo", archivo: "juego-ahorro-en-equipo" },
+          { nombre: "Compartir Tambien Vale", archivo: "juego-compartir-tambien-vale" }
+        ]
+      }
+    };
+  </script>
+</body>
+</html>

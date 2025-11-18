@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Rompe la Suma</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #F3F8FF;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      color: #6A5ACD;
+    }
+    #bloques-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 600px;
+      margin: 20px auto;
+    }
+    .bloque {
+      width: 120px;
+      height: 80px;
+      margin: 10px;
+      background-color: #AEE1F9;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+    }
+    .bloque.correcto {
+      background-color: #D8B4E2;
+      text-decoration: line-through;
+    }
+    #mensaje {
+      font-size: 18px;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Rompe la Suma</h1>
+  <p>Resuelve las sumas para romper los bloques</p>
+  <h3 id="nivel">Nivel 1</h3>
+  <div id="bloques-container"></div>
+  <p id="mensaje"></p>
+
+  <script>
+    let nivel = 1;
+    let totalBloques = 5;
+
+    function iniciarNivel() {
+      const container = document.getElementById('bloques-container');
+      const mensaje = document.getElementById('mensaje');
+      const nivelTexto = document.getElementById('nivel');
+      container.innerHTML = '';
+      mensaje.textContent = '';
+      nivelTexto.textContent = `Nivel ${nivel}`;
+      let resueltos = 0;
+
+      for (let i = 0; i < totalBloques; i++) {
+        const a = Math.floor(Math.random() * 5 + nivel); // dificultad progresiva
+        const b = Math.floor(Math.random() * 5 + 1);
+        const resultado = a + b;
+
+        const bloque = document.createElement('div');
+        bloque.className = 'bloque';
+        bloque.textContent = `${a} + ${b}`;
+        bloque.onclick = () => {
+          const respuesta = prompt(`¿Cuánto es ${a} + ${b}?`);
+          if (parseInt(respuesta) === resultado) {
+            bloque.classList.add('correcto');
+            bloque.onclick = null;
+            resueltos++;
+            if (resueltos === totalBloques) {
+              lanzarConfeti();
+              mensaje.textContent = '¡Nivel completado! 🎉';
+              setTimeout(() => {
+                nivel++;
+                if (nivel <= 6) {
+                  iniciarNivel();
+                } else {
+                  mensaje.textContent = '¡Felicidades! Completaste todos los niveles 🎊';
+                }
+              }, 2000);
+            }
+          } else {
+            mensaje.textContent = 'Ups, respuesta incorrecta. Reiniciando nivel...';
+            setTimeout(() => iniciarNivel(), 1500);
+          }
+        };
+        container.appendChild(bloque);
+      }
+    }
+
+    function lanzarConfeti() {
+      for (let i = 0; i < 100; i++) {
+        const confeti = document.createElement('div');
+        confeti.style.position = 'fixed';
+        confeti.style.width = '10px';
+        confeti.style.height = '10px';
+        confeti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 70%)`;
+        confeti.style.left = `${Math.random() * 100}%`;
+        confeti.style.top = '-10px';
+        confeti.style.opacity = 0.8;
+        confeti.style.zIndex = 9999;
+        confeti.style.borderRadius = '50%';
+        confeti.style.animation = `caer ${2 + Math.random() * 2}s linear forwards`;
+        document.body.appendChild(confeti);
+        setTimeout(() => confeti.remove(), 4000);
+      }
+    }
+
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes caer {
+        to {
+          transform: translateY(100vh) rotate(360deg);
+          opacity: 0;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+
+    iniciarNivel();
+  </script>
+</body>
+</html>

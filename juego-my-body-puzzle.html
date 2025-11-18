@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Body Puzzle</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #F3F8FF;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      color: #6A5ACD;
+    }
+    #imagen-cuerpo {
+      width: 300px;
+      height: 400px;
+      background-color: #FFD3E0;
+      margin: 20px auto;
+      position: relative;
+      border-radius: 20px;
+    }
+    .parte {
+      position: absolute;
+      background-color: #AEE1F9;
+      padding: 5px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    #mensaje {
+      font-size: 18px;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <h1>My Body Puzzle</h1>
+  <p>Haz clic en la parte del cuerpo que corresponde a: <strong id="objetivo"></strong></p>
+  <h3 id="nivel">Nivel 1</h3>
+  <div id="imagen-cuerpo"></div>
+  <p id="mensaje"></p>
+
+  <script>
+    const partes = [
+      { nombre: 'Head', x: 120, y: 30 },
+      { nombre: 'Arm', x: 20, y: 150 },
+      { nombre: 'Leg', x: 120, y: 300 },
+      { nombre: 'Hand', x: 220, y: 180 },
+      { nombre: 'Foot', x: 120, y: 370 },
+      { nombre: 'Eye', x: 140, y: 60 },
+      { nombre: 'Mouth', x: 130, y: 100 },
+      { nombre: 'Ear', x: 80, y: 80 }
+    ];
+
+    let nivel = 1;
+    let objetivo = '';
+
+    function iniciarNivel() {
+      const imagen = document.getElementById('imagen-cuerpo');
+      const mensaje = document.getElementById('mensaje');
+      const nivelTexto = document.getElementById('nivel');
+      const objetivoTexto = document.getElementById('objetivo');
+      imagen.innerHTML = '';
+      mensaje.textContent = '';
+      nivelTexto.textContent = `Nivel ${nivel}`;
+
+      const opciones = partes.sort(() => Math.random() - 0.5).slice(0, 4);
+      objetivo = opciones[Math.floor(Math.random() * opciones.length)].nombre;
+      objetivoTexto.textContent = objetivo;
+
+      opciones.forEach(parte => {
+        const div = document.createElement('div');
+        div.className = 'parte';
+        div.textContent = parte.nombre;
+        div.style.left = parte.x + 'px';
+        div.style.top = parte.y + 'px';
+        div.onclick = () => {
+          if (parte.nombre === objetivo) {
+            div.style.backgroundColor = 'green';
+            lanzarConfeti();
+            mensaje.textContent = '¡Correcto! 🎉';
+            setTimeout(() => {
+              nivel++;
+              if (nivel <= 10) {
+                iniciarNivel();
+              } else {
+                mensaje.textContent = '¡Felicidades! Completaste todos los niveles 🎊';
+              }
+            }, 2000);
+          } else {
+            mensaje.textContent = 'Ups, esa no es. Intenta de nuevo.';
+            setTimeout(() => iniciarNivel(), 1500);
+          }
+        };
+        imagen.appendChild(div);
+      });
+    }
+
+    function lanzarConfeti() {
+      for (let i = 0; i < 100; i++) {
+        const confeti = document.createElement('div');
+        confeti.style.position = 'fixed';
+        confeti.style.width = '10px';
+        confeti.style.height = '10px';
+        confeti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 70%)`;
+        confeti.style.left = `${Math.random() * 100}%`;
+        confeti.style.top = '-10px';
+        confeti.style.opacity = 0.8;
+        confeti.style.zIndex = 9999;
+        confeti.style.borderRadius = '50%';
+        confeti.style.animation = `caer ${2 + Math.random() * 2}s linear forwards`;
+        document.body.appendChild(confeti);
+        setTimeout(() => confeti.remove(), 4000);
+      }
+    }
+
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes caer {
+        to {
+          transform: translateY(100vh) rotate(360deg);
+          opacity: 0;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+
+    iniciarNivel();
+  </script>
+</body>
+</html>

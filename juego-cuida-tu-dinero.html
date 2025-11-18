@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cuida tu Dinero</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #F3F8FF;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      color: #6A5ACD;
+    }
+    #instruccion {
+      font-size: 22px;
+      margin: 20px 0;
+    }
+    #opciones {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+    }
+    .opcion {
+      background-color: #AEE1F9;
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      border: 4px solid transparent;
+      width: 160px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .opcion:hover {
+      border-color: #D8B4E2;
+    }
+    #mensaje {
+      font-size: 18px;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Cuida tu Dinero</h1>
+  <h3 id="nivel">Nivel 1</h3>
+  <div id="instruccion">Haz clic en la opción que muestra cómo cuidar tu dinero</div>
+  <div id="opciones"></div>
+  <p id="mensaje"></p>
+
+  <script>
+    const niveles = [
+      {
+        buenas: ['Guardarlo en una alcancía', 'Contarlo con ayuda de un adulto'],
+        malas: ['Dejarlo en el suelo', 'Prestarlo sin permiso']
+      },
+      {
+        buenas: ['Guardar los billetes en un sobre', 'Llevarlo en una mochila cerrada'],
+        malas: ['Meterlo en los zapatos', 'Tirarlo en la calle']
+      },
+      {
+        buenas: ['Ahorrarlo para algo importante', 'Revisarlo antes de salir'],
+        malas: ['Dárselo a cualquiera', 'Romperlo por diversión']
+      },
+      {
+        buenas: ['Separarlo por cantidades', 'Anotar cuánto tienes'],
+        malas: ['Esconderlo en el jardín', 'Olvidarlo en la escuela']
+      },
+      {
+        buenas: ['Guardar monedas en una caja segura', 'No mostrarlo en público'],
+        malas: ['Lanzarlo como juego', 'Dibujar sobre los billetes']
+      }
+    ];
+
+    let nivel = 1;
+
+    function iniciarNivel() {
+      const opcionesEl = document.getElementById('opciones');
+      const mensaje = document.getElementById('mensaje');
+      const nivelTexto = document.getElementById('nivel');
+
+      mensaje.textContent = '';
+      opcionesEl.innerHTML = '';
+      nivelTexto.textContent = `Nivel ${nivel}`;
+
+      const datos = niveles[nivel - 1];
+      const opciones = [...datos.buenas, ...datos.malas].sort(() => Math.random() - 0.5);
+      let aciertos = 0;
+
+      opciones.forEach(op => {
+        const btn = document.createElement('div');
+        btn.className = 'opcion';
+        btn.textContent = op;
+        btn.onclick = () => {
+          if (datos.buenas.includes(op)) {
+            btn.style.borderColor = 'green';
+            btn.onclick = null;
+            aciertos++;
+            if (aciertos === datos.buenas.length) {
+              lanzarConfeti();
+              mensaje.textContent = '¡Muy bien! Nivel completado 🎉';
+              setTimeout(() => {
+                nivel++;
+                if (nivel <= niveles.length) {
+                  iniciarNivel();
+                } else {
+                  mensaje.textContent = '¡Felicidades! Completaste todos los niveles 🎊';
+                }
+              }, 2000);
+            }
+          } else {
+            mensaje.textContent = 'Ups, eso no cuida tu dinero. Intenta de nuevo.';
+            setTimeout(() => iniciarNivel(), 1500);
+          }
+        };
+        opcionesEl.appendChild(btn);
+      });
+    }
+
+    function lanzarConfeti() {
+      for (let i = 0; i < 100; i++) {
+        const confeti = document.createElement('div');
+        confeti.style.position = 'fixed';
+        confeti.style.width = '10px';
+        confeti.style.height = '10px';
+        confeti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 70%)`;
+        confeti.style.left = `${Math.random() * 100}%`;
+        confeti.style.top = '-10px';
+        confeti.style.opacity = 0.8;
+        confeti.style.zIndex = 9999;
+        confeti.style.borderRadius = '50%';
+        confeti.style.animation = `caer ${2 + Math.random() * 2}s linear forwards`;
+        document.body.appendChild(confeti);
+        setTimeout(() => confeti.remove(), 4000);
+      }
+    }
+
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes caer {
+        to {
+          transform: translateY(100vh) rotate(360deg);
+          opacity: 0;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+
+    iniciarNivel();
+  </script>
+</body>
+</html>

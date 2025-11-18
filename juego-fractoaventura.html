@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Fractoaventura</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #F3F8FF;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      color: #6A5ACD;
+    }
+    #instruccion {
+      font-size: 24px;
+      margin: 20px 0;
+    }
+    #figuras {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+    canvas {
+      border: 4px solid transparent;
+      cursor: pointer;
+    }
+    canvas:hover {
+      border-color: #D8B4E2;
+    }
+    #mensaje {
+      font-size: 18px;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Fractoaventura</h1>
+  <h3 id="nivel">Nivel 1</h3>
+  <div id="instruccion"></div>
+  <div id="figuras"></div>
+  <p id="mensaje"></p>
+
+  <script>
+    const fracciones = [
+      { nombre: 'Mitad', partes: 2, coloreadas: 1 },
+      { nombre: 'Tercio', partes: 3, coloreadas: 1 },
+      { nombre: 'Cuarto', partes: 4, coloreadas: 1 },
+      { nombre: 'Tres cuartos', partes: 4, coloreadas: 3 },
+      { nombre: 'Dos tercios', partes: 3, coloreadas: 2 }
+    ];
+
+    let nivel = 1;
+
+    function iniciarNivel() {
+      const figurasEl = document.getElementById('figuras');
+      const mensaje = document.getElementById('mensaje');
+      const nivelTexto = document.getElementById('nivel');
+      const instruccion = document.getElementById('instruccion');
+
+      mensaje.textContent = '';
+      figurasEl.innerHTML = '';
+      nivelTexto.textContent = `Nivel ${nivel}`;
+
+      const opciones = fracciones.sort(() => Math.random() - 0.5).slice(0, 3);
+      const seleccion = opciones[Math.floor(Math.random() * opciones.length)];
+      instruccion.textContent = `Haz clic en la figura que representa: ${seleccion.nombre}`;
+
+      opciones.forEach(frac => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 100;
+        canvas.height = 100;
+        const ctx = canvas.getContext('2d');
+        const cx = 50, cy = 50, r = 40;
+
+        for (let i = 0; i < frac.partes; i++) {
+          const start = (2 * Math.PI / frac.partes) * i;
+          const end = start + (2 * Math.PI / frac.partes);
+          ctx.beginPath();
+          ctx.moveTo(cx, cy);
+          ctx.arc(cx, cy, r, start, end);
+          ctx.closePath();
+          ctx.fillStyle = i < frac.coloreadas ? '#6A5ACD' : '#E0E0E0';
+          ctx.fill();
+        }
+
+        canvas.onclick = () => {
+          if (frac.nombre === seleccion.nombre) {
+            canvas.style.borderColor = 'green';
+            lanzarConfeti();
+            mensaje.textContent = '¡Correcto! 🎉';
+            setTimeout(() => {
+              nivel++;
+              if (nivel <= 10) {
+                iniciarNivel();
+              } else {
+                mensaje.textContent = '¡Felicidades! Completaste todos los niveles 🎊';
+              }
+            }, 2000);
+          } else {
+            mensaje.textContent = 'Ups, intenta de nuevo...';
+            setTimeout(() => iniciarNivel(), 1500);
+          }
+        };
+
+        figurasEl.appendChild(canvas);
+      });
+    }
+
+    function lanzarConfeti() {
+      for (let i = 0; i < 100; i++) {
+        const confeti = document.createElement('div');
+        confeti.style.position = 'fixed';
+        confeti.style.width = '10px';
+        confeti.style.height = '10px';
+        confeti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 70%)`;
+        confeti.style.left = `${Math.random() * 100}%`;
+        confeti.style.top = '-10px';
+        confeti.style.opacity = 0.8;
+        confeti.style.zIndex = 9999;
+        confeti.style.borderRadius = '50%';
+        confeti.style.animation = `caer ${2 + Math.random() * 2}s linear forwards`;
+        document.body.appendChild(confeti);
+        setTimeout(() => confeti.remove(), 4000);
+      }
+    }
+
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes caer {
+        to {
+          transform: translateY(100vh) rotate(360deg);
+          opacity: 0;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+
+    iniciarNivel();
+  </script>
+</body>
+</html>

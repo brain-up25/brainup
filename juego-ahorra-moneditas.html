@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ahorra Moneditas</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #F3F8FF;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      color: #6A5ACD;
+    }
+    #monedas-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 600px;
+      margin: 20px auto;
+    }
+    .moneda {
+      width: 80px;
+      height: 80px;
+      margin: 10px;
+      background-color: #AEE1F9;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      cursor: pointer;
+      border: 4px solid transparent;
+    }
+    .moneda:hover {
+      border-color: #D8B4E2;
+    }
+    #mensaje {
+      font-size: 18px;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Ahorra Moneditas</h1>
+  <p>Haz clic en monedas hasta llegar a: <strong id="meta"></strong></p>
+  <h3 id="nivel">Nivel 1</h3>
+  <div id="monedas-container"></div>
+  <p id="mensaje"></p>
+
+  <script>
+    const valores = [1, 2, 5, 10];
+    let nivel = 1;
+    let meta = 10;
+    let acumulado = 0;
+
+    function iniciarNivel() {
+      const container = document.getElementById('monedas-container');
+      const mensaje = document.getElementById('mensaje');
+      const nivelTexto = document.getElementById('nivel');
+      const metaTexto = document.getElementById('meta');
+      container.innerHTML = '';
+      mensaje.textContent = '';
+      acumulado = 0;
+      meta = nivel * 10;
+      nivelTexto.textContent = `Nivel ${nivel}`;
+      metaTexto.textContent = `$${meta}`;
+
+      for (let i = 0; i < 6; i++) {
+        const valor = valores[Math.floor(Math.random() * valores.length)];
+        const div = document.createElement('div');
+        div.className = 'moneda';
+        div.textContent = `$${valor}`;
+        div.onclick = () => {
+          acumulado += valor;
+          if (acumulado === meta) {
+            div.style.borderColor = 'green';
+            lanzarConfeti();
+            mensaje.textContent = '¡Muy bien! Ahorro completo 🎉';
+            setTimeout(() => {
+              nivel++;
+              if (nivel <= 5) {
+                iniciarNivel();
+              } else {
+                mensaje.textContent = '¡Felicidades! Completaste todos los niveles 🎊';
+              }
+            }, 2000);
+          } else if (acumulado > meta) {
+            mensaje.textContent = 'Ups, te pasaste. Reiniciando nivel...';
+            setTimeout(() => iniciarNivel(), 1500);
+          } else {
+            mensaje.textContent = `Llevas ahorrado: $${acumulado}`;
+            div.style.borderColor = 'gray';
+            div.onclick = null;
+          }
+        };
+        container.appendChild(div);
+      }
+    }
+
+    function lanzarConfeti() {
+      for (let i = 0; i < 100; i++) {
+        const confeti = document.createElement('div');
+        confeti.style.position = 'fixed';
+        confeti.style.width = '10px';
+        confeti.style.height = '10px';
+        confeti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 70%)`;
+        confeti.style.left = `${Math.random() * 100}%`;
+        confeti.style.top = '-10px';
+        confeti.style.opacity = 0.8;
+        confeti.style.zIndex = 9999;
+        confeti.style.borderRadius = '50%';
+        confeti.style.animation = `caer ${2 + Math.random() * 2}s linear forwards`;
+        document.body.appendChild(confeti);
+        setTimeout(() => confeti.remove(), 4000);
+      }
+    }
+
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes caer {
+        to {
+          transform: translateY(100vh) rotate(360deg);
+          opacity: 0;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+
+    iniciarNivel();
+  </script>
+</body>
+</html>

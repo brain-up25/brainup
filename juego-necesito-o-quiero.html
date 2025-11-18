@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>¿Lo necesito o lo quiero?</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #F3F8FF;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      color: #6A5ACD;
+    }
+    #instruccion {
+      font-size: 24px;
+      margin: 20px 0;
+    }
+    #opciones {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+    }
+    .opcion {
+      background-color: #AEE1F9;
+      padding: 15px 25px;
+      border-radius: 10px;
+      font-size: 18px;
+      cursor: pointer;
+      border: 4px solid transparent;
+      width: 140px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .opcion:hover {
+      border-color: #D8B4E2;
+    }
+    #mensaje {
+      font-size: 18px;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <h1>¿Lo necesito o lo quiero?</h1>
+  <h3 id="nivel">Nivel 1</h3>
+  <div id="instruccion">Haz clic en lo que sea una necesidad</div>
+  <div id="opciones"></div>
+  <p id="mensaje"></p>
+
+  <script>
+    const opcionesNivel = [
+      ['Agua', 'Videojuego', 'Pan', 'Chocolate'],
+      ['Ropa', 'Pastel', 'Casa', 'Juguete'],
+      ['Medicinas', 'Refresco', 'Fruta', 'Celular'],
+      ['Zapatos', 'Paleta', 'Comida', 'Tablet'],
+      ['Abrigo', 'Hamburguesa', 'Luz', 'Pelota']
+    ];
+
+    const necesidades = ['Agua', 'Pan', 'Ropa', 'Casa', 'Medicinas', 'Fruta', 'Zapatos', 'Comida', 'Abrigo', 'Luz'];
+
+    let nivel = 1;
+
+    function iniciarNivel() {
+      const opcionesEl = document.getElementById('opciones');
+      const mensaje = document.getElementById('mensaje');
+      const nivelTexto = document.getElementById('nivel');
+
+      mensaje.textContent = '';
+      opcionesEl.innerHTML = '';
+      nivelTexto.textContent = `Nivel ${nivel}`;
+
+      const opciones = opcionesNivel[nivel - 1];
+      const correctas = opciones.filter(op => necesidades.includes(op));
+      let aciertos = 0;
+
+      opciones.sort(() => Math.random() - 0.5).forEach(op => {
+        const btn = document.createElement('div');
+        btn.className = 'opcion';
+        btn.textContent = op;
+        btn.onclick = () => {
+          if (necesidades.includes(op)) {
+            btn.style.borderColor = 'green';
+            btn.onclick = null;
+            aciertos++;
+            if (aciertos === correctas.length) {
+              lanzarConfeti();
+              mensaje.textContent = '¡Muy bien! Nivel completado 🎉';
+              setTimeout(() => {
+                nivel++;
+                if (nivel <= opcionesNivel.length) {
+                  iniciarNivel();
+                } else {
+                  mensaje.textContent = '¡Felicidades! Completaste todos los niveles 🎊';
+                }
+              }, 2000);
+            }
+          } else {
+            mensaje.textContent = 'Ups, eso es un deseo. Intenta de nuevo.';
+            setTimeout(() => iniciarNivel(), 1500);
+          }
+        };
+        opcionesEl.appendChild(btn);
+      });
+    }
+
+    function lanzarConfeti() {
+      for (let i = 0; i < 100; i++) {
+        const confeti = document.createElement('div');
+        confeti.style.position = 'fixed';
+        confeti.style.width = '10px';
+        confeti.style.height = '10px';
+        confeti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 70%)`;
+        confeti.style.left = `${Math.random() * 100}%`;
+        confeti.style.top = '-10px';
+        confeti.style.opacity = 0.8;
+        confeti.style.zIndex = 9999;
+        confeti.style.borderRadius = '50%';
+        confeti.style.animation = `caer ${2 + Math.random() * 2}s linear forwards`;
+        document.body.appendChild(confeti);
+        setTimeout(() => confeti.remove(), 4000);
+      }
+    }
+
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes caer {
+        to {
+          transform: translateY(100vh) rotate(360deg);
+          opacity: 0;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+
+    iniciarNivel();
+  </script>
+</body>
+</html>

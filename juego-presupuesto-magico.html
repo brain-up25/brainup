@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Presupuesto Mágico</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #F3F8FF;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      color: #6A5ACD;
+    }
+    #presupuesto {
+      font-size: 22px;
+      margin: 10px 0;
+    }
+    #opciones {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+    }
+    .opcion {
+      background-color: #AEE1F9;
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      border: 4px solid transparent;
+      width: 160px;
+      height: 80px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .opcion:hover {
+      border-color: #D8B4E2;
+    }
+    #mensaje {
+      font-size: 18px;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Presupuesto Mágico</h1>
+  <h3 id="nivel">Nivel 1</h3>
+  <div id="presupuesto"></div>
+  <div id="opciones"></div>
+  <p id="mensaje"></p>
+
+  <script>
+    const niveles = [
+      {
+        dinero: 10,
+        opciones: [
+          { nombre: 'Pan', costo: 3, tipo: 'necesidad' },
+          { nombre: 'Jugo', costo: 2, tipo: 'deseo' },
+          { nombre: 'Juguete', costo: 5, tipo: 'deseo' },
+          { nombre: 'Fruta', costo: 4, tipo: 'necesidad' }
+        ],
+        meta: ['Pan', 'Fruta']
+      },
+      {
+        dinero: 12,
+        opciones: [
+          { nombre: 'Medicinas', costo: 6, tipo: 'necesidad' },
+          { nombre: 'Refresco', costo: 3, tipo: 'deseo' },
+          { nombre: 'Zapatos', costo: 6, tipo: 'necesidad' },
+          { nombre: 'Pelota', costo: 4, tipo: 'deseo' }
+        ],
+        meta: ['Medicinas', 'Zapatos']
+      },
+      {
+        dinero: 15,
+        opciones: [
+          { nombre: 'Ropa', costo: 7, tipo: 'necesidad' },
+          { nombre: 'Chocolate', costo: 3, tipo: 'deseo' },
+          { nombre: 'Libro', costo: 8, tipo: 'necesidad' },
+          { nombre: 'Helado', costo: 4, tipo: 'deseo' }
+        ],
+        meta: ['Ropa', 'Libro']
+      }
+    ];
+
+    let nivel = 1;
+    let seleccionados = [];
+    let totalGastado = 0;
+
+    function iniciarNivel() {
+      const opcionesEl = document.getElementById('opciones');
+      const mensaje = document.getElementById('mensaje');
+      const nivelTexto = document.getElementById('nivel');
+      const presupuestoEl = document.getElementById('presupuesto');
+
+      mensaje.textContent = '';
+      opcionesEl.innerHTML = '';
+      seleccionados = [];
+      totalGastado = 0;
+      nivelTexto.textContent = `Nivel ${nivel}`;
+
+      const datos = niveles[nivel - 1];
+      presupuestoEl.textContent = `Tienes $${datos.dinero}. Elige sabiamente.`;
+
+      datos.opciones.forEach(op => {
+        const btn = document.createElement('div');
+        btn.className = 'opcion';
+        btn.innerHTML = `<strong>${op.nombre}</strong><span>$${op.costo}</span>`;
+        btn.onclick = () => {
+          if (totalGastado + op.costo <= datos.dinero) {
+            totalGastado += op.costo;
+            seleccionados.push(op.nombre);
+            btn.style.borderColor = 'green';
+            btn.onclick = null;
+            if (totalGastado === datos.dinero) {
+              validarSeleccion();
+            }
+          } else {
+            mensaje.textContent = '¡Te pasaste del presupuesto! Intenta de nuevo.';
+            setTimeout(() => iniciarNivel(), 1500);
+          }
+        };
+        opcionesEl.appendChild(btn);
+      });
+    }
+
+    function validarSeleccion() {
+      const mensaje = document.getElementById('mensaje');
+      const datos = niveles[nivel - 1];
+      const esCorrecto = datos.meta.every(item => seleccionados.includes(item)) && seleccionados.length === datos.meta.length;
+
+      if (esCorrecto) {
+        lanzarConfeti();
+        mensaje.textContent = '¡Correcto! Presupuesto bien usado 🎉';
+        setTimeout(() => {
+          nivel++;
+          if (nivel <= niveles.length) {
+            iniciarNivel();
+          } else {
+            mensaje.textContent = '¡Felicidades! Completaste todos los niveles 🎊';
+          }
+        }, 2000);
+      } else {
+        mensaje.textContent = 'Ups, no elegiste bien. Intenta de nuevo.';
+        setTimeout(() => iniciarNivel(), 1500);
+      }
+    }
+
+    function lanzarConfeti() {
+      for (let i = 0; i < 100; i++) {
+        const confeti = document.createElement('div');
+        confeti.style.position = 'fixed';
+        confeti.style.width = '10px';
+        confeti.style.height = '10px';
+        confeti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 70%)`;
+        confeti.style.left = `${Math.random() * 100}%`;
+        confeti.style.top = '-10px';
+        confeti.style.opacity = 0.8;
+        confeti.style.zIndex = 9999;
+        confeti.style.borderRadius = '50%';
+        confeti.style.animation = `caer ${2 + Math.random() * 2}s linear forwards`;
+        document.body.appendChild(confeti);
+        setTimeout(() => confeti.remove(), 4000);
+      }
+    }
+
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes caer {
+        to {
+          transform: translateY(100vh) rotate(360deg);
+          opacity: 0;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+
+    iniciarNivel();
+  </script>
+</body>
+</html>
